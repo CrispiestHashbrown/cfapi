@@ -12,10 +12,13 @@ router.use(express.json());
 // -- routes --
 // Redirect user for GitHub auth
 router.get('/', (req, res) => {
-  // Verify scopes here
+  const scope = 'user:follow&read:user&public_repo&read:repo_hook';
+  const userScope = req.query.scope;
+  if (userScope !== scope) {
+    return res.status(400).send('Bad request.');
+  }
 
   const client_id = config.get('appauth.client_id');
-  const scope = 'repo';
   const state = stateValue;
   res.set({
     'Date': new Date()
