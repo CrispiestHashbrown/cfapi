@@ -12,7 +12,7 @@ router.use(express.json());
 // -- routes --
 // Redirect user for GitHub auth
 router.get('/', (req, res) => {
-  const scope = 'user:follow&read:user&public_repo&read:repo_hook';
+  const scope = 'user:follow,read:user,public_repo,read:repo_hook';
   const userScope = req.query.scope;
   if (userScope !== scope) {
     return res.status(400).send('Bad request.');
