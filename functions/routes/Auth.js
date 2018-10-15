@@ -5,26 +5,26 @@ const crypto = require('crypto');
 const base64url = require('base64url');
 const config = require('config');
 
+const client_id = config.get('appauth.client_id');
 const stateValue = unguessableRandomString(20);
+const scopeTruth = 'public_repo,read:repo_hook,read:user,user:follow';
 
 router.use(express.json());
 
 // -- routes --
 // Redirect user for GitHub auth
 router.get('/', (req, res) => {
-  const scope = 'user:follow,read:user,public_repo,read:repo_hook';
-  const userScope = req.query.scope;
-  if (userScope !== scope) {
+  const appScopes = req.query.scope;
+  if (appScopes !== scopeTruth) {
     return res.status(400).send('Bad request.');
   }
 
-  const client_id = config.get('appauth.client_id');
   const state = stateValue;
   res.set({
     'Date': new Date()
   });
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&?scope=${scope}&?state=${state}`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${state}`;
   res.redirect(url);
 });
 
@@ -38,7 +38,7 @@ router.get('/handler', (req, res) => {
     uri: 'https://github.com/login/oauth/access_token',
     method: 'POST',
     body: {
-      client_id: config.get('appauth.client_id'),
+      client_id: client_id,
       client_secret: config.get('appauth.client_secret'),
       code: req.query.code,
       state: stateValue
@@ -52,8 +52,12 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
-      const access_token = body.access_token;
-      // Verify token scope here
+      if (body.scope === scopeTruth) {
+        // TODO: allow access_token for use
+        res.status(200).send('Authorization was successful.');
+      } else {
+        res.status(403).send('Access token does not have required scope.');
+      }
     }
   }
 
