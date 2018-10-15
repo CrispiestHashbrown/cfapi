@@ -12,7 +12,7 @@ router.use(express.json());
 // -- routes --
 // Redirect user for GitHub auth
 router.get('/', (req, res) => {
-  const scope = 'user:follow,read:user,public_repo,read:repo_hook';
+  const scope = 'public_repo,read:repo_hook,read:user,user:follow';
   const userScope = req.query.scope;
   if (userScope !== scope) {
     return res.status(400).send('Bad request.');
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
     'Date': new Date()
   });
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&?scope=${scope}&?state=${state}`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scope}&state=${state}`;
   res.redirect(url);
 });
 
