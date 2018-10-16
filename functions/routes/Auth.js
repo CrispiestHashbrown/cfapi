@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
   });
 
   const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${state}`;
-  res.redirect(url);
+  res.redirect(301, url);
 });
 
 // Auth handler with access code
