@@ -52,12 +52,11 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
-      if (body.scope === scopeTruth) {
-        // TODO: allow access_token for use
-        res.status(200).send('Authorization was successful.');
-      } else {
-        res.status(403).send('Access token does not have required scope.');
-      }
+      // TODO: allow access_token for use
+      res.status(200).send('Authorization was successful.');
+    } else {
+      console.log(`${response.statusCode} error: ${error}`);
+      res.status(500).send('Error while authenticating with GitHub.');
     }
   }
 
