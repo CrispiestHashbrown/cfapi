@@ -25,7 +25,7 @@ function isAccessTokenValid (token, callback) {
       ];
       const parsedBody = JSON.parse(body);
       const validationResult = _.isEqual(parsedBody.scopes, scopeObject);
-      callback(validationResult);
+      return callback(validationResult);
     } else {
       console.log('There was an error while accessing the Github API.', err);
     }
