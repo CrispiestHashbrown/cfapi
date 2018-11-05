@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
   }, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       const parsedBody = JSON.parse(body);
-      res.status(response.statusCode).send(parsedBody);
+      return res.status(response.statusCode).send(parsedBody);
     } else {
       console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
     }

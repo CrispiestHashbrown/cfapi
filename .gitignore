@@ -1,2 +1,3 @@
-dev.json
-prod.json
+development.json
+production.json
+.runtimeconfig.json
