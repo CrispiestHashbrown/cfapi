@@ -19,12 +19,11 @@ router.get('/', (req, res) => {
     return res.status(400).send('Bad request.');
   }
 
-  const state = stateValue;
   res.set({
     'Date': new Date()
   });
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${state}`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${stateValue}`;
   res.redirect(301, url);
 });
 
