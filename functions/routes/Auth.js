@@ -1,11 +1,11 @@
+const functions = require('firebase-functions');
 const express = require('express');
 const router = express.Router();
 const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64url');
-const config = require('config');
 
-const client_id = config.get('appauth.client_id');
+const client_id = functions.config().appauth.client_id;
 const stateValue = unguessableRandomString(20);
 const scopeTruth = 'public_repo,read:repo_hook,read:user,user:follow';
 
@@ -18,10 +18,6 @@ router.get('/', (req, res) => {
   if (appScopes !== scopeTruth) {
     return res.status(400).send('Bad request.');
   }
-
-  res.set({
-    'Date': new Date()
-  });
 
   const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${stateValue}`;
   res.redirect(301, url);
@@ -38,12 +34,11 @@ router.get('/handler', (req, res) => {
     method: 'POST',
     body: {
       client_id: client_id,
-      client_secret: config.get('appauth.client_secret'),
+      client_secret: functions.config().appauth.client_secret,
       code: req.query.code,
       state: stateValue
     },
     headers: {
-      Date: new Date(),
       'Accept': 'application/json'
     },
     json: true
@@ -51,8 +46,16 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
-      // TODO: allow access_token for use
-      res.status(200).send('Authorization was successful.');
+      req.session.regenerate(function (regenerateErr) {
+        if (!regenerateErr) {
+          req.session.access_token = body.access_token;
+          req.session.cookie.maxAge = 604800000;
+          res.status(200).send('Authorization was successful.');
+        } else {
+          console.log(regenerateErr);
+          res.status(500).send('Internal error.');
+        }
+      });
     } else {
       console.log(`${response.statusCode} error: ${error}`);
       res.status(500).send('Error while authenticating with GitHub.');

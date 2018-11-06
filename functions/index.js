@@ -1,6 +1,8 @@
 const functions = require('firebase-functions');
 const firebase = require('firebase-admin');
 const express = require('express');
+const session = require('express-session');
+const FirestoreStore = require('firestore-store')(session);
 
 const Auth = require('./routes/Auth');
 const Repos = require('./routes/userdata/Repos');
@@ -10,8 +12,35 @@ const firebaseApp = firebase.initializeApp(
 );
 
 const app = express();
+const sessionSecret = functions.config().session.secret;
 
+if (!sessionSecret) {
+  console.error('FATAL ERROR');
+  process.exit(1);
+}
+
+var userSession = session({
+  store: new FirestoreStore({
+    database: firebaseApp.firestore()
+  }),
+  name: '__session',
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 300000,
+    // enable 'secure: true' when deploy to prod
+    // secure: true,
+    httpOnly: false
+  }
+});
+
+app.use(userSession);
 app.use(express.json());
+app.use(function (req, res, next) {
+  res.setHeader('Date', firebase.firestore.Timestamp.now().toDate());
+  next();
+});
 app.use('/__/auth', Auth);
 app.use('/user/repos', Repos);
 
