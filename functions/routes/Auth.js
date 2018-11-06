@@ -19,10 +19,6 @@ router.get('/', (req, res) => {
     return res.status(400).send('Bad request.');
   }
 
-  res.set({
-    'Date': new Date()
-  });
-
   const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${stateValue}`;
   res.redirect(301, url);
 });
@@ -43,7 +39,6 @@ router.get('/handler', (req, res) => {
       state: stateValue
     },
     headers: {
-      Date: new Date(),
       'Accept': 'application/json'
     },
     json: true
