@@ -1,11 +1,11 @@
+const functions = require('firebase-functions');
 const express = require('express');
 const router = express.Router();
 const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64url');
-const config = require('config');
 
-const client_id = config.get('appauth.client_id');
+const client_id = functions.config().appauth.client_id;
 const stateValue = unguessableRandomString(20);
 const scopeTruth = 'public_repo,read:repo_hook,read:user,user:follow';
 
@@ -34,7 +34,7 @@ router.get('/handler', (req, res) => {
     method: 'POST',
     body: {
       client_id: client_id,
-      client_secret: config.get('appauth.client_secret'),
+      client_secret: functions.config().appauth.client_secret,
       code: req.query.code,
       state: stateValue
     },
