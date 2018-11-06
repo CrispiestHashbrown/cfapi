@@ -12,7 +12,6 @@ function isAccessTokenValid (token, callback) {
     },
     headers: {
       'User-Agent': 'CrispiestHashbrown',
-      Date: new Date(),
       'Accept': 'application/json'
     }
   }, function (err, res, body) {

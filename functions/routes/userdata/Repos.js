@@ -21,7 +21,6 @@ router.get('/', (req, res) => {
     headers: {
       'Authorization': `bearer ${access_token}`,
       'User-Agent': 'CrispiestHashbrown',
-      Date: new Date(),
       'Accept': 'application/json'
     }
   }, function (error, response, body) {

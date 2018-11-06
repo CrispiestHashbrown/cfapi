@@ -12,6 +12,10 @@ const firebaseApp = firebase.initializeApp(
 const app = express();
 
 app.use(express.json());
+app.use(function (req, res, next) {
+  res.setHeader('Date', firebase.firestore.Timestamp.now().toDate());
+  next();
+});
 app.use('/__/auth', Auth);
 app.use('/user/repos', Repos);
 
