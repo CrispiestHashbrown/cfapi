@@ -46,8 +46,16 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
-      // TODO: allow access_token for use
-      res.status(200).send('Authorization was successful.');
+      req.session.regenerate(function (regenerateErr) {
+        if (!regenerateErr) {
+          req.session.access_token = body.access_token;
+          req.session.cookie.maxAge = 604800000;
+          res.status(200).send('Authorization was successful.');
+        } else {
+          console.log(regenerateErr);
+          res.status(500).send('Internal error.');
+        }
+      });
     } else {
       console.log(`${response.statusCode} error: ${error}`);
       res.status(500).send('Error while authenticating with GitHub.');
