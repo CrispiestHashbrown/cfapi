@@ -8,15 +8,12 @@ router.use(express.json());
 // -- routes --
 // GET user repositories
 router.get('/', (req, res) => {
-  // TODO: Set up sessions
-  const sessionStorage = '';
-  const access_token = sessionStorage.access_token;
-  if (!req.query.access_token) {
+  const access_token = req.session.access_token;
+  if (!access_token) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/repos${query(req.url)}`;
-  console.log(url);
   request.get(url, {
     headers: {
       'Authorization': `bearer ${access_token}`,
