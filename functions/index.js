@@ -5,6 +5,7 @@ const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
 
 const Auth = require('./routes/Auth');
+const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
 
 const firebaseApp = firebase.initializeApp(
@@ -42,6 +43,7 @@ app.use(function (req, res, next) {
   next();
 });
 app.use('/__/auth', Auth);
+app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
 
 const port = process.env.PORT || 3000;

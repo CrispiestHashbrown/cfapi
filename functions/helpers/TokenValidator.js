@@ -1,6 +1,5 @@
 const functions = require('firebase-functions');
 const request = require('request');
-const config = require('config');
 const _ = require('lodash');
 const client_id = functions.config().appauth.client_id;
 
