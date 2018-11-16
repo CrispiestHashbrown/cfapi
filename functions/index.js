@@ -3,6 +3,7 @@ const firebase = require('firebase-admin');
 const express = require('express');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
+const ResponseHeaders = require('./middleware/SetResponseHeaders');
 
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
@@ -39,10 +40,7 @@ var userSession = session({
 
 app.use(userSession);
 app.use(express.json());
-app.use(function (req, res, next) {
-  res.setHeader('Date', firebase.firestore.Timestamp.now().toDate());
-  next();
-});
+app.use(ResponseHeaders);
 app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
