@@ -7,6 +7,7 @@ const FirestoreStore = require('firestore-store')(session);
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
+const Following = require('./routes/userdata/Following');
 
 const firebaseApp = firebase.initializeApp(
   functions.config().firebase
@@ -45,6 +46,7 @@ app.use(function (req, res, next) {
 app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
+app.use('/user/following', Following);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
