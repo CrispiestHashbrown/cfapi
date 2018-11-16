@@ -3,10 +3,12 @@ const firebase = require('firebase-admin');
 const express = require('express');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
+const ResponseHeaders = require('./middleware/SetResponseHeaders');
 
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
+const Following = require('./routes/userdata/Following');
 
 const firebaseApp = firebase.initializeApp(
   functions.config().firebase
@@ -38,13 +40,11 @@ var userSession = session({
 
 app.use(userSession);
 app.use(express.json());
-app.use(function (req, res, next) {
-  res.setHeader('Date', firebase.firestore.Timestamp.now().toDate());
-  next();
-});
+app.use(ResponseHeaders);
 app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
+app.use('/user/following', Following);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
