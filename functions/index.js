@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const firebase = require('firebase-admin');
 const express = require('express');
+const helmet = require('helmet');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
@@ -38,6 +39,10 @@ var userSession = session({
   }
 });
 
+app.use(helmet());
+app.use(helmet.hsts({
+  maxAge: 31536000
+}));
 app.use(userSession);
 app.use(express.json());
 app.use(ResponseHeaders);
