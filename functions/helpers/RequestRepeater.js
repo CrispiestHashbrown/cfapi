@@ -6,7 +6,6 @@ function repeatGetRequest (options, res) {
     request.get(options, function (error, response, body) {
       if (!error && retries > 0 && response.statusCode === 200) {
         const parsedBody = JSON.parse(body);
-        console.log(parsedBody);
         return res.status(response.statusCode).send(parsedBody);
       } else if (!error && retries > 0 && response.statusCode === 202) {
         --retries;
