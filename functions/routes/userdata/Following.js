@@ -30,7 +30,7 @@ router.get('/', (req, res) => {
 });
 
 // GET to check if authenticated user is following another user
-router.get('/:user`', (req, res) => {
+router.get('/:user', (req, res) => {
   const access_token = req.session.access_token;
   if (!access_token) {
     return res.status(401).send('Unauthorized request');
