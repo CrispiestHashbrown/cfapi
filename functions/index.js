@@ -9,8 +9,10 @@ const ResponseHeaders = require('./middleware/SetResponseHeaders');
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
+const Issues = require('./routes/userdata/Issues');
 const Following = require('./routes/userdata/Following');
 const Starred = require('./routes/userdata/Starred');
+const Search = require('./routes/Search');
 
 const firebaseApp = firebase.initializeApp(
   functions.config().firebase
@@ -50,8 +52,10 @@ app.use(ResponseHeaders);
 app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
+app.use('/issues/', Issues);
 app.use('/user/following', Following);
 app.use('/user/starred', Starred);
+app.use('/search/repositories', Search);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
