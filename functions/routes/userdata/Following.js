@@ -30,6 +30,29 @@ router.get('/', (req, res) => {
   });
 });
 
+// GET to check if authenticated user is following another user
+router.get('/:user`', (req, res) => {
+  const access_token = req.session.access_token;
+  if (!access_token) {
+    return res.status(401).send('Unauthorized request');
+  }
+
+  const url = `https://api.github.com/user/following/${user}`;
+  request.get(url, {
+    headers: {
+      'Authorization': `bearer ${access_token}`,
+      'User-Agent': 'CrispiestHashbrown',
+      'Accept': 'application/json'
+    }
+  }, function (error, response, body) {
+    if (!error && response.statusCode === 204) {
+      return res.status(response.statusCode).send('No Content');
+    } else {
+      console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
+    }
+  });
+});
+
 // PUT to follow a GitHub user
 router.put('/:user', (req, res) => {
   const access_token = req.session.access_token;
