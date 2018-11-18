@@ -9,6 +9,7 @@ const ResponseHeaders = require('./middleware/SetResponseHeaders');
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
+const Issues = require('./routes/userdata/Issues');
 const Following = require('./routes/userdata/Following');
 const Starred = require('./routes/userdata/Starred');
 
@@ -50,6 +51,7 @@ app.use(ResponseHeaders);
 app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
+app.use('/issues/', Issues);
 app.use('/user/following', Following);
 app.use('/user/starred', Starred);
 
