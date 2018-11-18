@@ -21,8 +21,7 @@ router.get('/', (req, res) => {
     }
   }, function (error, response, body) {
     if (!error && response.statusCode === 200) {
-      const parsedBody = JSON.parse(body);
-      const usersFollowed = parsedBody.login;
+      const usersFollowed = JSON.parse(body);
       return res.status(response.statusCode).send(usersFollowed);
     } else {
       console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
