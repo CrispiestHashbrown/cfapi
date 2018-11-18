@@ -12,6 +12,7 @@ const Repos = require('./routes/userdata/Repos');
 const Issues = require('./routes/userdata/Issues');
 const Following = require('./routes/userdata/Following');
 const Starred = require('./routes/userdata/Starred');
+const Search = require('./routes/Search');
 
 const firebaseApp = firebase.initializeApp(
   functions.config().firebase
@@ -54,6 +55,7 @@ app.use('/user/repos', Repos);
 app.use('/issues/', Issues);
 app.use('/user/following', Following);
 app.use('/user/starred', Starred);
+app.use('/search/repositories', Search);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
