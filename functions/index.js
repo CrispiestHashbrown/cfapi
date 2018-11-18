@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const firebase = require('firebase-admin');
 const express = require('express');
+const helmet = require('helmet');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
@@ -9,6 +10,7 @@ const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
 const Repos = require('./routes/userdata/Repos');
 const Following = require('./routes/userdata/Following');
+const Starred = require('./routes/userdata/Starred');
 
 const firebaseApp = firebase.initializeApp(
   functions.config().firebase
@@ -38,6 +40,10 @@ var userSession = session({
   }
 });
 
+app.use(helmet());
+app.use(helmet.hsts({
+  maxAge: 31536000
+}));
 app.use(userSession);
 app.use(express.json());
 app.use(ResponseHeaders);
@@ -45,6 +51,7 @@ app.use('/__/auth', Auth);
 app.use('/repocommitcount', RepoCommitCount);
 app.use('/user/repos', Repos);
 app.use('/user/following', Following);
+app.use('/user/starred', Starred);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
