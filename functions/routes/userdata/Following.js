@@ -36,7 +36,7 @@ router.get('/:user', (req, res) => {
     return res.status(401).send('Unauthorized request');
   }
 
-  const url = `https://api.github.com/user/following/${user}`;
+  const url = `https://api.github.com/user/following/${req.params.user}`;
   request.get(url, {
     headers: {
       'Authorization': `bearer ${access_token}`,
