@@ -7,7 +7,7 @@ const base64url = require('base64url');
 
 const client_id = functions.config().appauth.client_id;
 const stateValue = unguessableRandomString(20);
-const scopeTruth = 'public_repo,read:repo_hook,read:user,user:follow';
+const scopeTruth = 'public_repo,read:user,user:follow';
 
 router.use(express.json());
 
