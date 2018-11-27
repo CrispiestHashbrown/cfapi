@@ -18,7 +18,6 @@ function isAccessTokenValid (token, callback) {
     if (!err && res.statusCode === 200) {
       const scopeObject = [
         'public_repo',
-        'read:repo_hook',
         'read:user',
         'user:follow'
       ];
