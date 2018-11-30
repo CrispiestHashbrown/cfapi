@@ -65,6 +65,33 @@ router.get('/handler', (req, res) => {
   request.post(options, callback);
 });
 
+// DELETE to revoke app access grant
+router.delete('/grants', (req, res) => {
+  const access_token = req.session.access_token;
+  if (!access_token) {
+    return res.status(401).send('Unauthorized request');
+  }
+
+  const url = `https://api.github.com/applications/${client_id}/grants/${access_token}`;
+  request.delete(url, {
+    'auth': {
+      'user': client_id,
+      'pass': functions.config().appauth.client_secret
+    },
+    headers: {
+      'Authorization': `bearer ${access_token}`,
+      'User-Agent': 'CrispiestHashbrown',
+      'Accept': 'application/json'
+    }
+  }, function (error, response, body) {
+    if (!error && response.statusCode === 204) {
+      return res.status(response.statusCode).send('No Content');
+    } else {
+      console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
+    }
+  });
+});
+
 // Generate unguessable random string
 function unguessableRandomString (size) {
   return base64url(crypto.randomBytes(size));
