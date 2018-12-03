@@ -92,6 +92,16 @@ router.delete('/grants', (req, res) => {
   });
 });
 
+// GET confirmation if valid access token exists
+router.get('/ping', (req, res) => {
+  const access_token = req.session.access_token;
+  if (!access_token) {
+    return res.status(400).send('Bad request.');
+  } else {
+    return res.status(200);
+  }
+});
+
 // Generate unguessable random string
 function unguessableRandomString (size) {
   return base64url(crypto.randomBytes(size));
