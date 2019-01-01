@@ -8,15 +8,15 @@ router.use(express.json());
 // -- routes --
 // GET starred repos
 router.get('/', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/starred${query(req.url)}`;
   request.get(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
@@ -33,15 +33,15 @@ router.get('/', (req, res) => {
 
 // GET to check if user is starring a repository
 router.get('/:owner/:repo', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/starred/${req.params.owner}/${req.params.repo}`;
   request.get(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
@@ -56,15 +56,15 @@ router.get('/:owner/:repo', (req, res) => {
 
 // PUT to star a repo
 router.put('/:owner/:repo', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/starred/${req.params.owner}/${req.params.repo}`;
   request.put(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json',
       'Content-Length': 0
@@ -80,15 +80,15 @@ router.put('/:owner/:repo', (req, res) => {
 
 // DELETE to unstar repo
 router.delete('/:owner/:repo', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/starred/${req.params.owner}/${req.params.repo}`;
   request.delete(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
