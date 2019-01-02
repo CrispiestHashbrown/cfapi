@@ -6,7 +6,6 @@ const crypto = require('crypto');
 const base64url = require('base64url');
 
 const ghid = functions.config().appauth.ghid;
-const stateValue = unguessableRandomString(20);
 const scopeTruth = 'public_repo,read:user,user:follow';
 
 router.use(express.json());
@@ -19,13 +18,17 @@ router.get('/', (req, res) => {
     return res.status(400).send('Bad request.');
   }
 
+  const stateValue = unguessableRandomString(20);
+  req.session.stateValue = stateValue;
   const url = `https://github.com/login/oauth/authorize?client_id=${ghid}&scope=${scopeTruth}&state=${stateValue}`;
   res.redirect(301, url);
 });
 
 // Auth handler with access code
 router.get('/handler', (req, res) => {
-  if (!req.query.code) {
+  const sessionStateValue = req.session.stateValue;
+  const queryState = req.query.state;
+  if (!req.query.code || !sessionStateValue || queryState !== sessionStateValue) {
     return res.status(400).send('Bad request');
   }
 
@@ -36,7 +39,7 @@ router.get('/handler', (req, res) => {
       client_id: ghid,
       client_secret: functions.config().appauth.ghs,
       code: req.query.code,
-      state: stateValue
+      state: sessionStateValue
     },
     headers: {
       'Accept': 'application/json'
