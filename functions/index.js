@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
+const cors = require('cors');
 
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
@@ -42,6 +43,7 @@ var userSession = session({
   }
 });
 
+app.use(cors());
 app.use(helmet());
 app.use(helmet.hsts({
   maxAge: 31536000
