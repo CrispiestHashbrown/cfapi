@@ -32,12 +32,12 @@ var userSession = session({
   }),
   name: '__session',
   secret: sessionSecret,
+  proxy: true,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
     maxAge: 300000,
-    // enable 'secure: true' when deploy to prod
-    // secure: true,
+    secure: true,
     httpOnly: false
   }
 });
