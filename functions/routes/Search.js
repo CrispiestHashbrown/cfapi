@@ -8,15 +8,15 @@ router.use(express.json());
 // -- routes --
 // GET repository search results
 router.get('/', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/search/repositories${query(req.url)}`;
   request.get(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }

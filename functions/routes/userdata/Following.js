@@ -7,15 +7,15 @@ router.use(express.json());
 // -- routes --
 // GET list of who the authenticated user is following
 router.get('/', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/following`;
   request.get(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
@@ -32,15 +32,15 @@ router.get('/', (req, res) => {
 
 // GET to check if authenticated user is following another user
 router.get('/:user', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/following/${req.params.user}`;
   request.get(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
@@ -55,15 +55,15 @@ router.get('/:user', (req, res) => {
 
 // PUT to follow a GitHub user
 router.put('/:user', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/following/${req.params.user}`;
   request.put(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json',
       'Content-Length': 0
@@ -79,15 +79,15 @@ router.put('/:user', (req, res) => {
 
 // DELETE to unfollow a GitHub user
 router.delete('/:user', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
   const url = `https://api.github.com/user/following/${req.params.user}`;
   request.delete(url, {
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }

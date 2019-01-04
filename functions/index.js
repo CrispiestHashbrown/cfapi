@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
+const cors = require('cors');
 
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
@@ -32,16 +33,17 @@ var userSession = session({
   }),
   name: '__session',
   secret: sessionSecret,
+  proxy: true,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
     maxAge: 300000,
-    // enable 'secure: true' when deploy to prod
-    // secure: true,
+    secure: true,
     httpOnly: false
   }
 });
 
+app.use(cors());
 app.use(helmet());
 app.use(helmet.hsts({
   maxAge: 31536000

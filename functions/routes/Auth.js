@@ -5,8 +5,7 @@ const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64url');
 
-const client_id = functions.config().appauth.client_id;
-const stateValue = unguessableRandomString(20);
+const ghid = functions.config().appauth.ghid;
 const scopeTruth = 'public_repo,read:user,user:follow';
 
 router.use(express.json());
@@ -19,13 +18,17 @@ router.get('/', (req, res) => {
     return res.status(400).send('Bad request.');
   }
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scopeTruth}&state=${stateValue}`;
+  const stateValue = unguessableRandomString(20);
+  req.session.stateValue = stateValue;
+  const url = `https://github.com/login/oauth/authorize?client_id=${ghid}&scope=${scopeTruth}&state=${stateValue}`;
   res.redirect(301, url);
 });
 
 // Auth handler with access code
 router.get('/handler', (req, res) => {
-  if (!req.query.code) {
+  const sessionStateValue = req.session.stateValue;
+  const queryState = req.query.state;
+  if (!req.query.code || !sessionStateValue || queryState !== sessionStateValue) {
     return res.status(400).send('Bad request');
   }
 
@@ -33,10 +36,10 @@ router.get('/handler', (req, res) => {
     uri: 'https://github.com/login/oauth/access_token',
     method: 'POST',
     body: {
-      client_id: client_id,
-      client_secret: functions.config().appauth.client_secret,
+      client_id: ghid,
+      client_secret: functions.config().appauth.ghs,
       code: req.query.code,
-      state: stateValue
+      state: sessionStateValue
     },
     headers: {
       'Accept': 'application/json'
@@ -48,7 +51,7 @@ router.get('/handler', (req, res) => {
     if (!error && response.statusCode === 200) {
       req.session.regenerate(function (regenerateErr) {
         if (!regenerateErr) {
-          req.session.access_token = body.access_token;
+          req.session.ght = body.access_token;
           req.session.cookie.maxAge = 604800000;
           res.status(200).send('Authorization was successful.');
         } else {
@@ -67,19 +70,19 @@ router.get('/handler', (req, res) => {
 
 // DELETE to revoke app access grant
 router.delete('/grants', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(401).send('Unauthorized request');
   }
 
-  const url = `https://api.github.com/applications/${client_id}/grants/${access_token}`;
+  const url = `https://api.github.com/applications/${ghid}/grants/${ght}`;
   request.delete(url, {
     'auth': {
-      'user': client_id,
-      'pass': functions.config().appauth.client_secret
+      'user': ghid,
+      'pass': functions.config().appauth.ghs
     },
     headers: {
-      'Authorization': `bearer ${access_token}`,
+      'Authorization': `bearer ${ght}`,
       'User-Agent': 'CrispiestHashbrown',
       'Accept': 'application/json'
     }
@@ -94,8 +97,8 @@ router.delete('/grants', (req, res) => {
 
 // GET confirmation if valid access token exists
 router.get('/ping', (req, res) => {
-  const access_token = req.session.access_token;
-  if (!access_token) {
+  const ght = req.session.ght;
+  if (!ght) {
     return res.status(400).send('Bad request.');
   } else {
     return res.status(200);
