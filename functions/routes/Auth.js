@@ -52,7 +52,7 @@ router.get('/handler', (req, res) => {
       req.session.regenerate(function (regenerateErr) {
         if (!regenerateErr) {
           req.session.ght = body.access_token;
-          req.session.cookie.maxAge = 604800000;
+          req.session.cookie.maxAge = 259200000;
           res.status(200).send('Authorization was successful.');
         } else {
           console.log(regenerateErr);
@@ -101,7 +101,7 @@ router.get('/ping', (req, res) => {
   if (!ght) {
     return res.status(400).send('Bad request.');
   } else {
-    return res.status(200);
+    return res.status(204);
   }
 });
 
