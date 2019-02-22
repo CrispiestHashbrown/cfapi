@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Commit Frequency API Handler</title>
+    </head>
+    <body>
+      <p>Copy this code into the app:</p>
+      <input type="text" id="token" readonly="readonly" value={{token}}></p>
+    </body>
+    <button onclick="copyToClipboard()">Copy</button>
+
+    <script>
+      function copyToClipboard() {
+        var copyText = document.getElementById('token');
+        copyText.select();
+        document.execCommand('copy');
+        console.log(`Copied: ${copyText.value}`);
+        alert('Copied');
+      }
+    </script>
+</html>

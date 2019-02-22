@@ -3,6 +3,7 @@ const firebase = require('firebase-admin');
 const express = require('express');
 const helmet = require('helmet');
 const session = require('express-session');
+const engines = require('consolidate');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
 const cors = require('cors');
@@ -42,6 +43,10 @@ var userSession = session({
     httpOnly: false
   }
 });
+
+app.engine('hbs', engines.handlebars);
+app.set('views', './views');
+app.set('view engine', 'hbs');
 
 app.use(cors());
 app.use(helmet());

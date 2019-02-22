@@ -4,6 +4,7 @@ const router = express.Router();
 const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64url');
+const tokenVerifier = require('../helpers/TokenVerifier');
 
 const ghid = functions.config().appauth.ghid;
 const scopeTruth = 'public_repo,read:user,user:follow';
@@ -28,7 +29,8 @@ router.get('/', (req, res) => {
 router.get('/handler', (req, res) => {
   const sessionStateValue = req.session.stateValue;
   const queryState = req.query.state;
-  if (!req.query.code || !sessionStateValue || queryState !== sessionStateValue) {
+  const code = req.query.code;
+  if (!code || !sessionStateValue || queryState !== sessionStateValue) {
     return res.status(400).send('Bad request');
   }
 
@@ -38,7 +40,7 @@ router.get('/handler', (req, res) => {
     body: {
       client_id: ghid,
       client_secret: functions.config().appauth.ghs,
-      code: req.query.code,
+      code: code,
       state: sessionStateValue
     },
     headers: {
@@ -49,16 +51,8 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
-      req.session.regenerate(function (regenerateErr) {
-        if (!regenerateErr) {
-          req.session.ght = body.access_token;
-          req.session.cookie.maxAge = 259200000;
-          res.status(200).send('Authorization was successful.');
-        } else {
-          console.log(regenerateErr);
-          res.status(500).send('Internal error.');
-        }
-      });
+      const token = body.access_token;
+      res.render('../views/handler', { token: token });
     } else {
       console.log(`${response.statusCode} error: ${error}`);
       res.status(500).send('Error while authenticating with GitHub.');
@@ -66,6 +60,27 @@ router.get('/handler', (req, res) => {
   }
 
   request.post(options, callback);
+});
+
+// Submit authenticated token
+router.get('/submit', (req, res) => {
+  const token = req.query.token;
+  tokenVerifier(token, function (verifierRes, verifierErr) {
+    if (!verifierRes) {
+      res.status(400).send(`Error while verifying token with GitHub: ${verifierErr}`);
+    } else {
+      req.session.regenerate(function (regenerateErr) {
+        if (!regenerateErr) {
+          req.session.ght = token;
+          req.session.cookie.maxAge = 259200000;
+          res.status(200).send('Token verified.');
+        } else {
+          console.log(regenerateErr);
+          res.status(500).send('Internal error.');
+        }
+      });
+    }
+  });
 });
 
 // DELETE to revoke app access grant
