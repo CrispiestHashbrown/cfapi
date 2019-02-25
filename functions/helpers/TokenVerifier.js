@@ -1,9 +1,11 @@
 const functions = require('firebase-functions');
 const request = require('request');
 const _ = require('lodash');
+const authHeaderParser = require('./AuthHeaderParser');
 const ghid = functions.config().appauth.ghid;
 
-function isAccessTokenValid (ght, callback) {
+function isAccessTokenValid (authHeader, callback) {
+  const ght = authHeaderParser(authHeader);
   const url = `https://api.github.com/applications/${ghid}/tokens/${ght}`;
   request.get(url, {
     'auth': {
