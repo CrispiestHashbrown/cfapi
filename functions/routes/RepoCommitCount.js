@@ -7,14 +7,14 @@ router.use(express.json());
 
 // -- routes --
 // GET repository commit count for the past year
-router.get('/', (req, res) => {
+router.get('/:owner/:repo', (req, res) => {
   const authHeader = req.header('Authorization');
   tokenVerifier(authHeader, function (verifierRes, verifierErr) {
     if (!verifierRes) {
       res.status(400).send(`Error verifying token: ${verifierErr}`);
     } else {
       const options = {
-        url: `https://api.github.com/repos/${req.query.owner}/${req.query.repo}/stats/participation`,
+        url: `https://api.github.com/repos/${req.params.owner}/${req.params.repo}/stats/participation`,
         headers: {
           'Authorization': authHeader,
           'User-Agent': 'CrispiestHashbrown',
