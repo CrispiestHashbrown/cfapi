@@ -4,6 +4,8 @@ const router = express.Router();
 const request = require('request');
 const crypto = require('crypto');
 const base64url = require('base64url');
+const FirestoreInstance = require('../middleware/FirestoreInstance');
+const authHeaderParser = require('../helpers/AuthHeaderParser');
 const tokenVerifier = require('../helpers/TokenVerifier');
 
 const ghid = functions.config().appauth.ghid;
@@ -51,6 +53,7 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
+      // TODO: clean up Firestore sessions
       const token = body.access_token;
       res.render('../views/handler', { token: token });
     } else {
@@ -62,61 +65,43 @@ router.get('/handler', (req, res) => {
   request.post(options, callback);
 });
 
-// Submit authenticated token
-router.get('/submit', (req, res) => {
-  const token = req.query.token;
-  tokenVerifier(token, function (verifierRes, verifierErr) {
+// Verify token
+router.get('/verify', (req, res) => {
+  const authHeader = req.get('Authorization');
+  tokenVerifier(authHeader, function (verifierRes, verifierErr) {
     if (!verifierRes) {
-      res.status(400).send(`Error while verifying token with GitHub: ${verifierErr}`);
+      res.status(400).send(`Error verifying token: ${verifierErr}`);
     } else {
-      req.session.regenerate(function (regenerateErr) {
-        if (!regenerateErr) {
-          req.session.ght = token;
-          req.session.cookie.maxAge = 259200000;
-          res.status(200).send('Token verified.');
-        } else {
-          console.log(regenerateErr);
-          res.status(500).send('Internal error.');
-        }
-      });
+      res.status(200).send('Token verified.');
     }
   });
 });
 
 // DELETE to revoke app access grant
 router.delete('/grants', (req, res) => {
-  const ght = req.session.ght;
+  const authHeader = req.header('Authorization');
+  const ght = authHeaderParser(authHeader);
   if (!ght) {
-    return res.status(401).send('Unauthorized request');
-  }
-
-  const url = `https://api.github.com/applications/${ghid}/grants/${ght}`;
-  request.delete(url, {
-    'auth': {
-      'user': ghid,
-      'pass': functions.config().appauth.ghs
-    },
-    headers: {
-      'Authorization': `bearer ${ght}`,
-      'User-Agent': 'CrispiestHashbrown',
-      'Accept': 'application/json'
-    }
-  }, function (error, response, body) {
-    if (!error && response.statusCode === 204) {
-      return res.status(response.statusCode).send('No Content');
-    } else {
-      console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
-    }
-  });
-});
-
-// GET confirmation if valid access token exists
-router.get('/ping', (req, res) => {
-  const ght = req.session.ght;
-  if (!ght) {
-    return res.status(400).send('Bad request.');
+    res.status(400).send('Invalid authorization.');
   } else {
-    return res.status(204);
+    const url = `https://api.github.com/applications/${ghid}/grants/${ght}`;
+    request.delete(url, {
+      'auth': {
+        'user': ghid,
+        'pass': functions.config().appauth.ghs
+      },
+      headers: {
+        'Authorization': `bearer ${ght}`,
+        'User-Agent': 'CrispiestHashbrown',
+        'Accept': 'application/json'
+      }
+    }, function (error, response) {
+      if (!error && response.statusCode === 204) {
+        return res.status(204).send('No Content');
+      } else {
+        return res.status(400).send('Failed to revoke token grants.');
+      }
+    });
   }
 });
 

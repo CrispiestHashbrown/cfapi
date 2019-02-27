@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const firebase = require('firebase-admin');
 const express = require('express');
 const helmet = require('helmet');
 const session = require('express-session');
@@ -7,6 +6,7 @@ const engines = require('consolidate');
 const FirestoreStore = require('firestore-store')(session);
 const ResponseHeaders = require('./middleware/SetResponseHeaders');
 const cors = require('cors');
+const FirestoreInstance = require('./middleware/FirestoreInstance');
 
 const Auth = require('./routes/Auth');
 const RepoCommitCount = require('./routes/RepoCommitCount');
@@ -16,21 +16,18 @@ const Following = require('./routes/userdata/Following');
 const Starred = require('./routes/userdata/Starred');
 const Search = require('./routes/Search');
 
-const firebaseApp = firebase.initializeApp(
-  functions.config().firebase
-);
-
 const app = express();
 const sessionSecret = functions.config().session.secret;
+const ghs = functions.config().appauth.ghs;
 
-if (!sessionSecret) {
+if (!sessionSecret || !ghs) {
   console.error('FATAL ERROR');
   process.exit(1);
 }
 
 var userSession = session({
   store: new FirestoreStore({
-    database: firebaseApp.firestore()
+    database: FirestoreInstance
   }),
   name: '__session',
   secret: sessionSecret,
