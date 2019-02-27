@@ -13,8 +13,7 @@ function repeatGetRequest (options, res) {
           repeatGetRequest(options, retries);
         }, timeout);
       } else {
-        console.log(`${response.statusCode} response: Error accessing the Github API.`, error);
-        return res.status(500).send('Error while accessing GitHub.');
+        return res.status(response.statusCode).send(`Error while accessing GitHub: ${error}`);
       }
     });
   }
