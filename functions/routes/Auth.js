@@ -53,6 +53,7 @@ router.get('/handler', (req, res) => {
 
   function callback (error, response, body) {
     if (!error && response.statusCode === 200) {
+      // TODO: clean up Firestore sessions
       const token = body.access_token;
       res.render('../views/handler', { token: token });
     } else {
