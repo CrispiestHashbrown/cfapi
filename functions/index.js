@@ -50,6 +50,7 @@ app.use(helmet());
 app.use(helmet.hsts({
   maxAge: 31536000
 }));
+app.options('*', cors());
 app.use(userSession);
 app.use(express.json());
 app.use(ResponseHeaders);
@@ -63,5 +64,8 @@ app.use('/search/repositories', Search);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(80, function () {
+  console.log('CORS-enabled web server listening on port 80');
+});
 
 exports.app = functions.https.onRequest(app);
