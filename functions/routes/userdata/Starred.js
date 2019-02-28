@@ -63,28 +63,32 @@ router.get('/:owner/:repo', (req, res) => {
 
 // PUT to star a repo
 router.put('/:owner/:repo', (req, res) => {
-  const authHeader = req.header('Authorization');
-  tokenVerifier(authHeader, function (verifierRes, verifierErr) {
-    if (!verifierRes) {
-      res.status(400).send(`Error verifying token: ${verifierErr}`);
-    } else {
-      const url = `https://api.github.com/user/starred/${req.params.owner}/${req.params.repo}`;
-      request.put(url, {
-        headers: {
-          'Authorization': authHeader,
-          'User-Agent': 'CrispiestHashbrown',
-          'Accept': 'application/json',
-          'Content-Length': 0
-        }
-      }, function (error, response) {
-        if (!error && response.statusCode === 204) {
-          return res.status(204).send('No Content');
-        } else {
-          return res.status(response.statusCode).send(`Error accessing the Github API: ${error}`);
-        }
-      });
-    }
-  });
+  const ght = req.query.ght;
+  if (!ght) {
+    res.status(401).send(`Bad request.`);
+  } else {
+    tokenVerifier(`bearer ${ght}`, function (verifierRes, verifierErr) {
+      if (!verifierRes) {
+        res.status(400).send(`Error verifying token: ${verifierErr}`);
+      } else {
+        const url = `https://api.github.com/user/starred/${req.params.owner}/${req.params.repo}`;
+        request.put(url, {
+          headers: {
+            'Authorization': `bearer ${ght}`,
+            'User-Agent': 'CrispiestHashbrown',
+            'Accept': 'application/json',
+            'Content-Length': 0
+          }
+        }, function (error, response) {
+          if (!error && response.statusCode === 204) {
+            return res.status(204).send('No Content');
+          } else {
+            return res.status(response.statusCode).send(`Error accessing the Github API: ${error}`);
+          }
+        });
+      }
+    });
+  }
 });
 
 // DELETE to unstar repo
