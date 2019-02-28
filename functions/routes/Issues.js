@@ -23,7 +23,9 @@ router.get('/', (req, res) => {
         }
       }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          res.setHeader('Link', response.headers.link);
+          if (response.headers.link) {
+            res.setHeader('Link', response.headers.link);
+          }
           const parsedBody = JSON.parse(body);
           return res.status(200).send(parsedBody);
         } else {
@@ -50,7 +52,9 @@ router.get('/:owner/:repo', (req, res) => {
         }
       }, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          res.setHeader('Link', response.headers.link);
+          if (response.headers.link) {
+            res.setHeader('Link', response.headers.link);
+          }
           const parsedBody = JSON.parse(body);
           return res.status(200).send(parsedBody);
         } else {
