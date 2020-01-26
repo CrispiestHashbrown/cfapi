@@ -24,10 +24,6 @@ Clone the application:
 ```
 git clone https://github.com/CrispiestHashbrown/cfapi.git
 ```
-Navigate to the project directory and install dependencies:
-```
-npm install
-```
 Navigate to `cfapi/functions` and create your own `.runtimeconfig.json` that contains the following:
 ```
 {
@@ -40,6 +36,8 @@ Navigate to `cfapi/functions` and create your own `.runtimeconfig.json` that con
   }
 }
 ```
+**Note: Run the following commands within the `/functions` directory.**
+
 Install dependencies:
 ```
 npm install
