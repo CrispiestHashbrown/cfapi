@@ -1,6 +1,19 @@
 
 # cfapi
-Built with Express/Node.js, the Commit Frequency API lets users retrieve information about GitHub search results and information about their GitHub account. Information about search results includes the commit frequency for the past year, project owner, project name, repository stars, and project's primary language. Account information includes users they are following, public repositories, starred repositories, and assigned issues.
+Built with Express/Node.js, the Commit Frequency API lets users retrieve information about GitHub search results and information about their GitHub account. 
+
+Information about search results includes:
+- commit frequency for the past year
+- project owner
+- project name
+- repository stars
+- project's primary language
+
+Account information includes:
+- users they are following
+- public repositories
+- starred repositories
+- assigned issues
 
 This project is hosted with Google Cloud and [Firebase](https://firebase.google.com/docs/reference).
 
