@@ -22,7 +22,7 @@
     "firestore-store": "^1.0.0",
     "handlebars": "^4.3.0",
     "helmet": "^3.15.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.21",
     "query-string": "^6.2.0",
     "request": "^2.88.0"
   },
